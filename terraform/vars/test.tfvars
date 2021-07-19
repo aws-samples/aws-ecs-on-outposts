@@ -1,0 +1,14 @@
+Environment = "dev"
+Project = "outposts-AoD"
+Owner = "adf"
+vpc_name = "outposts-AoD"
+vpc_suffix = "-challenge"
+vpc_main_cidr = "10.181.192.0/19"
+outposts_arn = "arn:aws:outposts:us-west-2:{accountId}:outpost/op-{id}"
+outposts_route_to_LGW_destination = "10.10.0.0/24"
+outposts_local_gateway_id = "lgw-{id}"
+s3_bucket_outposts_logging_name = "outposts-aod-logging-bucket-1111111"
+kinesis_stream_name = "data-processing-stream"
+private_subnets_cidr_list = ["10.181.220.0/24", "10.181.221.0/24"]
+outposts_subnets_cidr_list = ["10.181.222.64/27", "10.181.222.96/27"]
+public_subnets_cidr_list   = ["10.181.194.0/23", "10.181.200.0/23"]
