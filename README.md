@@ -1,6 +1,6 @@
-## Amazon ECS on AWS Outposts
+# Amazon ECS on AWS Outposts
 
-Introduction:
+## Introduction
 
 The solution consists on a producer application for Amazon Kinesis Data Streams running on
 Amazon ECS containers on AWS Outposts. Amazon ECS containers will pull the docker
@@ -29,7 +29,7 @@ Under terraform folder, customers can find the test files used to deploy an exam
 * 5-test-kinesis-stream.tf
 * 6-test-kinesis-stream.tf
 
-Requirements:
+## Requirements
 * Update providers file with your information
 * Terraform version v0.13
 * Create or modifty tfvar file with your information (under vars folder)
@@ -41,14 +41,14 @@ This is the required information that you need to collect from your environment 
 * AWS Outposts Local Gateway ID
 
 
-Deployment:
+## Deployment
 * terraform init
 * terraform plan -var-file=vars/test.tfvars  -target=module.ecs-docker-codebuild
 * terraform apply -var-file=vars/test.tfvars  -target=module.ecs-docker-codebuild
 * terraform plan -var-file=vars/test.tfvars
 * terraform apply -var-file=vars/test.tfvars
 
-# example for VPC module
+## example for VPC module
 
 ```
 module "test-vpc" {
@@ -76,7 +76,7 @@ module "test-vpc" {
  }
 ```
 
-# example for ALB+ECS module
+## example for ALB+ECS module
 
 ```
 module "producer-outposts-ecs-alb" {
@@ -127,7 +127,7 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 
 This library is licensed under the MIT-0 License. See the LICENSE file.
 
-## VPC Module
+# VPC Module
 
 | Input Variable                                  | Optional / Mandatory | type         | default               |  description                                                                                                                                                                                                                                                                  |
 |-------------------------------------------------|----------------------|--------------|-----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -193,7 +193,7 @@ This library is licensed under the MIT-0 License. See the LICENSE file.
 | flow_log_cloudwatch_log_group_name_prefix       | optional             | String       | "/aws/vpc-flow-log/"  | Specifies the name prefix of CloudWatch Log Group for VPC flow logs.                                                                                                                                                                                                          |
 | flow_log_cloudwatch_log_group_retention_in_days | optional             | number       | null                  | Specifies the number of days you want to retain log events in the specified log group for VPC flow logs.                                                                                                                                                                      |                                                                                                                                                                                                                                                                             |
 
-## AB + ECS Module
+# AB + ECS Module
 
 
 | Input Variable                                   | Optional / Mandatory | type                                                                                                                                                                                                                                                                                                                                                                                                                                         | default                                                                                                                                                                                                                                                                                                                      |  description                                                                                                                                                                                                                                                                                                                                     |
