@@ -48,6 +48,76 @@ Deployment:
 * terraform plan -var-file=vars/test.tfvars
 * terraform apply -var-file=vars/test.tfvars
 
+# example for VPC module
+
+```
+module "test-vpc" {
+   source            = "./modules/vpc"
+   tags              = local.common_tags
+   vpc_name          = var.vpc_name
+   vpc_suffix        = var.vpc_suffix 
+   vpc_main_cidr   = "10.181.192.0/19"
+   enable_ipv6       = false
+   enable_dns_hostnames = true
+   enable_dns_support   = true
+   enable_internet_gateway = true
+   enable_nat_gateway  = true
+   enable_ssm          = true
+
+   number_AZ             = 2
+  
+   private_subnets_cidr_list       = ["10.181.220.0/24", "10.181.221.0/24"]
+   outposts_subnets_cidr_list           = ["10.181.222.64/27", "10.181.222.96/27"]
+   public_subnets_cidr_list     = ["10.181.194.0/23", "10.181.200.0/23"]
+  
+   outposts_arn   = var.outposts_arn
+   outposts_route_to_LGW_destination = var.outposts_route_to_LGW_destination
+   outposts_local_gateway_id   = var.outposts_local_gateway_id
+ }
+```
+
+# example for ALB+ECS module
+
+```
+module "producer-outposts-ecs-alb" {
+  depends_on = [module.ecs-docker-codebuild, aws_s3_bucket.s3_bucket_outposts_logging]
+
+  source   = "./modules/alb-ecs"
+  tags     = local.common_tags
+  vpc_name = "${var.vpc_name}${var.vpc_suffix}"
+
+  alb_name = "ALB-ECS"
+  subnets  = [module.test-vpc.subnet_outposts_ids[0]]
+
+  enable_alb_access_logging = true
+  logging_bucket_name       = "s3-bucket-logging-for-ALB-outposts"
+  alb_access_logs_prefix    = "ALB/outposts"
+
+  port_listeners = {
+    "port-1" = {
+      "port"               = 80,
+      "protocol"           = "HTTP",
+      "inbound_cidr_range" = ["10.6.0.0/24"]
+      "target_group" = {
+        "port"              = 8080,
+        "protocol"          = "HTTP",
+        "health_check_path" = "/healthcheck"
+      }
+    }
+  }
+
+  outposts_arn       = var.outposts_arn
+  ecs_cluster_name   = "producer-cluster"
+  log_group_name     = "producer-log"
+  log_retention_days = 30
+  ecr_name           = "kinesis/producer"
+
+  ec2_iam_instance_profile = module.test-vpc.iam_instance_profile_ec2_ssm_id
+
+}
+```
+
+
 
 ## Security
 
@@ -122,34 +192,6 @@ This library is licensed under the MIT-0 License. See the LICENSE file.
 | flow_log_cloudwatch_iam_role_arn                | optional             | String       | ""                    | The ARN for the IAM role that's used to post flow logs to a CloudWatch Logs log group. When flow_log_destination_arn is set to ARN of Cloudwatch Logs, this argument needs to be provided.                                                                                    |
 | flow_log_cloudwatch_log_group_name_prefix       | optional             | String       | "/aws/vpc-flow-log/"  | Specifies the name prefix of CloudWatch Log Group for VPC flow logs.                                                                                                                                                                                                          |
 | flow_log_cloudwatch_log_group_retention_in_days | optional             | number       | null                  | Specifies the number of days you want to retain log events in the specified log group for VPC flow logs.                                                                                                                                                                      |                                                                                                                                                                                                                                                                             |
-# example for VPC module
-
-```
-module "test-vpc" {
-   source            = "./modules/vpc"
-   tags              = local.common_tags
-   vpc_name          = var.vpc_name
-   vpc_suffix        = var.vpc_suffix 
-   vpc_main_cidr   = "10.181.192.0/19"
-   enable_ipv6       = false
-   enable_dns_hostnames = true
-   enable_dns_support   = true
-   enable_internet_gateway = true
-   enable_nat_gateway  = true
-   enable_ssm          = true
-
-   number_AZ             = 2
-  
-   private_subnets_cidr_list       = ["10.181.220.0/24", "10.181.221.0/24"]
-   outposts_subnets_cidr_list           = ["10.181.222.64/27", "10.181.222.96/27"]
-   public_subnets_cidr_list     = ["10.181.194.0/23", "10.181.200.0/23"]
-  
-   outposts_arn   = var.outposts_arn
-   outposts_route_to_LGW_destination = var.outposts_route_to_LGW_destination
-   outposts_local_gateway_id   = var.outposts_local_gateway_id
- }
-```
-
 
 ## AB + ECS Module
 
