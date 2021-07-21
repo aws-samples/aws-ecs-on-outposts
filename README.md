@@ -1,6 +1,6 @@
-### Amazon ECS on AWS Outposts
+## Amazon ECS on AWS Outposts
 
-## Introduction:
+### Introduction
 
 The solution consists on a producer application for Amazon Kinesis Data Streams running on
 Amazon ECS containers on AWS Outposts. Amazon ECS containers will pull the docker
