@@ -166,7 +166,7 @@ variable "ecs_cluster_name" {
 }
 
 variable "ecs_service" {
-  description = "[Required] Name for ECS cluster."
+  description = "[Optional] ECS service specification."
   type = object({
     ecs_service_name = string
     desired_count    = number
@@ -227,20 +227,20 @@ variable "ecr_name" {
 #----------------CAPACITY PROVIDER-------------------
 
 variable "ecs_ami_id" {
-  description = "[Optional] AMI ID for EC2"
+  description = "[Optional] AMI ID for EC2 instance/s that will host ECS containers"
   type        = string
   default     = "ami-017a715104f93ea81"
 }
 
 variable "ecs_instance_type" {
-  description = "[Optional] instance type for EC2"
+  description = "[Optional] instance type for EC2 instance/s that will host ECS containers"
   type        = string
   default     = "m5.2xlarge"
 }
 
 
 variable "ec2_iam_instance_profile" {
-  description = "[Required] iam instance profile for EC2"
+  description = "[Required] IAM instance profile ID for EC2 instance that will host ECS container"
   type        = string
 }
 
@@ -259,7 +259,7 @@ variable "minimum_scaling_step_size" {
 
 
 variable "capacity_provider_managed_termination_protection" {
-  description = "[Optional]  Enables or disables container-aware termination of instances in the auto scaling group when scale-in happens. Valid values are ENABLED and DISABLED."
+  description = "[Optional]  Enable or disable container-aware termination of instances in the auto scaling group when scale-in happens. Valid values are ENABLED and DISABLED."
   type        = string
   default     = "DISABLED"
 }
