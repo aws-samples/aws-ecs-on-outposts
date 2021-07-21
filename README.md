@@ -2,10 +2,24 @@
 
 Introduction:
 
+The solution consists on a producer application for Amazon Kinesis Data Streams running on
+Amazon ECS containers on AWS Outposts. Amazon ECS containers will pull the docker
+container image from an Amazon Elastic Container Registry (ECR) located in AWS Region.
+Amazon ECS cluster Auto Scaling will be enabled to manage the scale-in and scale-out actions
+for Amazon EC2 instances within a cluster. The application will receive traffic coming from on-
+premise datacentre via local gateway (LGW). In addition, an ALB running in AWS Outposts will
+balance the incoming data and it will distribute the load between Amazon ECS tasks.
+
+![img](media/ECS-outposts-architecture.jpg)
+
 This repository gives customers the right content to deploy Amazon ECS cluster on AWS Outposts. The showed architecture is not meant to be deployed in a production environment, but to serve as a template and a model. There are three modules provided here (under terraform/modules):
 * ALB + ECS
 * docker image + ECR + codebuild
 * VPC
+
+These are the AWS services created by this code:
+
+![img](media/ECS-outposts-services.jpg)
 
 Under terraform folder, customers can find the test files used to deploy an example solution:
 * 1-test-outposts-vpc.tf

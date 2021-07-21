@@ -8,7 +8,7 @@
 #
 
 ################
-# FARGATE IAM ROLES
+# IAM ROLES
 ################
 
 resource "aws_iam_role" "ecs_execution_role" {

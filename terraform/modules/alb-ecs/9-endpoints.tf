@@ -11,7 +11,6 @@
 # # EC2 SECURITY GROUPS
 # ################
 
-# #Question: is this compatible with outposts?
 
 resource "aws_security_group" "ecs_endpoints_sec_group" {
   name        = "${var.vpc_name}-${var.tags["Project"]}-ecs-endpoint"
@@ -165,7 +164,7 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
 }
 
 
-# #FOR SECRETS MANAGER - is it needed?
+# #FOR SECRETS MANAGER 
 data "aws_vpc_endpoint_service" "secretsmanager" {
   service = "secretsmanager"
 }
