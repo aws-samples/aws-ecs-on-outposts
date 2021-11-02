@@ -25,9 +25,6 @@ resource "aws_ecs_service" "service" {
   deployment_maximum_percent         = 100
   deployment_minimum_healthy_percent = 0
   enable_ecs_managed_tags            = true
-  #force_new_deployment
-  #health_check_grace_period_seconds 
-  #propagate_tags 
 
   tags = var.tags
 
