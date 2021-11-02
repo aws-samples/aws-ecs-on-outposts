@@ -2,19 +2,16 @@
 
 ## Introduction
 
-The solution consists on a producer application for Amazon Kinesis Data Streams running on
-Amazon ECS containers on AWS Outposts. Amazon ECS containers will pull the docker
-container image from an Amazon Elastic Container Registry (ECR) located in AWS Region.
-Amazon ECS cluster Auto Scaling will be enabled to manage the scale-in and scale-out actions
-for Amazon EC2 instances within a cluster. The application will receive traffic coming from on-
-premise datacentre via local gateway (LGW). In addition, an ALB running in AWS Outposts will
-balance the incoming data and it will distribute the load between Amazon ECS tasks.
+The solution consists on a producer application that writes data to an Amazon Kinesis Data Stream deployed in an AWS Region. Amazon Kinesis Producer Library (KPL) is the library used to build the producer. KPL simplifies producer application development, allowing developers to achieve high write throughput to a Kinesis data stream. More details about how to create a producer application can be found in the AWS post building a scalable streaming data processor with Amazon Kinesis Data Streams.
+
+This producer application is running in Amazon ECS containers on AWS Outposts. Amazon ECS pulls the container image from an Amazon Elastic Container Registry (ECR) located in an AWS Region. Amazon ECS cluster Auto Scaling is deployed to manage the scale-in and scale-out actions for Amazon EC2 instances within an Amazon ECS cluster. The application receives data coming from on-premise datacentre via LGW and an ALB running on AWS Outposts distributes this incoming traffic between the Amazon ECS tasks. The following diagram shows the architecture:
+
 
 ![img](media/ECS-outposts-architecture.jpg)
 
-This repository gives customers the right content to deploy Amazon ECS cluster on AWS Outposts. The showed architecture is not meant to be deployed in a production environment, but to serve as a template and a model. There are three modules provided here (under terraform/modules):
-* ALB + ECS
-* docker image + ECR + codebuild
+This blog provides you with a script to deploy Amazon ECS cluster on AWS Outposts. TThe proposed architecture is not meant to be deployed in a production environment, but to serve as a template, because you need to customize the input variables values specified in the tfvars file as well as other configuration options such as the ALB listener port and protocol, ALB target group port and protocol and the use of custom domains. There are three modules provided here (under terraform/modules):
+* ALB + ECS called 'alb-ecs'
+* docker image + ECR + codebuild called ‘docker-ecr-codebuild’
 * VPC
 
 These are the AWS services created by this code:
@@ -22,12 +19,23 @@ These are the AWS services created by this code:
 ![img](media/ECS-outposts-services.jpg)
 
 Under terraform folder, customers can find the test files used to deploy an example solution:
-* 1-test-outposts-vpc.tf
-* 2-test-ec2-client-instance.tf
-* 3-test-docker-ecr-codebuild.tf
-* 4-test-alb-ecs.tf
-* 5-test-kinesis-stream.tf
-* 6-test-kinesis-stream.tf
+* 1-test-outposts-vpc.tf: VPC and its components
+* 2-test-ec2-client-instance.tf: optional cloud resources to test the infrastructure
+* 3-test-docker-ecr-codebuild.tf: docker image + ECR + codebuild
+* 4-test-alb-ecs.tf: ALB and ECS resources
+* 5-test-kinesis-stream.tf: Kinesis Data Stream in AWS Region
+* 6-test-logging-s3.tf: optional S3 bucket for ALB logging
+
+The ‘alb-ecs’ module deploys the following resources: 
+*	An external ALB with a COIP association. ALB will be deployed in Outpost subnet (1 availability zone, it is not highly available) and it has as many listeners and ports (and protocols) as you specify during the module creation. 
+*	A security group for the ALB that allows inbound traffic from the list of ports and protocols that the ALB is listening to. It also allows inbound traffic from the CIDR block of your data center (that you have to specify in the input variables). This security group allows outbound traffic to the ECS security group for the list of ports and protocols that you have specified in the input variables. 
+*	Target group/s with IP type as target type, where the port, protocol and health check are given as inputs.
+*	An Auto Scaling group for ECS nodes associated with a launch template and with variables for the maximum size, minimum size, desired capacity, health check type, capacity rebalance, enabled metrics, override configuration, etc. The launch template will have associated user data with the container agent configuration (cluster name, enable cached, etc.). The launch template configuration is also customized with variables such as block device mapping, ec2 instance profile, AMI id, security groups or instance type.
+*	A capacity provider associated with the previous auto scaling group and with the configuration of the managed scaling options (target capacity, maximum scaling step, minimum scaling step size).
+*	An ECS cluster associated with the previous capacity provider.
+*	A task definition with variables such as CPU, memory and ports; and with awsvpc as network mode. It will use an execution and task IAM roles created in the module.
+*	An ECS service that uses above task definition, with launch type EC2, associated with the Application Load Balancer and that uses Outposts. It uses a security group that allows inbound traffic from the ALB and all egress traffic.
+
 
 ## Requirements
 * Update providers file with your information

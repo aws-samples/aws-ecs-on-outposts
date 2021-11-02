@@ -80,7 +80,7 @@ resource "aws_iam_role_policy" "ecs_task_policy" {
         "kinesis:PutRecords",
         "kinesis:PutRecord"
       ],
-      "Resource": "*"
+      "Resource": "arn:aws:kinesis:${data.aws_region.region.name}:${data.aws_caller_identity.current.account_id}:stream/${var.kinesis_stream_name}"
     },
     {
       "Sid": "taskrole2",
