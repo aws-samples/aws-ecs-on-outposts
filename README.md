@@ -40,7 +40,7 @@ The ‘alb-ecs’ module deploys the following resources:
 ## Requirements
 * Update providers file with your information
 * Terraform version v0.13
-* Create or modifty tfvar file with your information (under vars folder)
+* Create or modify tfvar file with your information (under vars folder)
 * You must have installed and configured an AWS Outposts in your on-premises
 datacenter.
 
